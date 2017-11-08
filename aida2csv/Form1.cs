@@ -57,21 +57,24 @@ namespace aida2csv
             string[] tab0 = File.ReadAllLines(path+"words.txt", Encoding.UTF8);
 
             //using (
-            FileStream fs = File.Open(path + "out.txt",FileMode.Create);
-              //  )
-                //{
-                StreamWriter sw = new StreamWriter(fs);             
-                
+            //FileStream fs = File.Open(path + "out.csv",FileMode.Create);
+            FileStream fs = File.Open(path + "out.csv", FileMode.Append);
+            //  )
+            //{
+            StreamWriter sw = new StreamWriter(fs,Encoding.GetEncoding("Windows-1251"));
+            
+            string str = "Файл,Операционная система, Пакет обновления ОС, Имя компьютера,Имя пользователя, SMTP -адрес e - mail,Вход в домен,Тип ЦП, Системная плата,Системная память, Монитор, Дисковый накопитель,Первичный адрес IP,Первичный адрес MAC";
+            sw.WriteLine(str);
             //}
 
             //получаем список файлов и обрабатіваем их
-           
+
             // open file
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Multiselect = true;
-            openFileDialog1.Filter = "Text Files|*.html";
+            openFileDialog1.Filter = "Text Files|*.htm";
             openFileDialog1.Title = "файл для обработки";
-            openFileDialog1.FileName = "*.html";
+            openFileDialog1.FileName = "*.htm";
             openFileDialog1.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();
            
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -81,24 +84,41 @@ namespace aida2csv
                foreach (String file in openFileDialog1.FileNames)
                 {
                     a += file+ Environment.NewLine;
-                    string[] file_html = File.ReadAllLines(file);
+                    string[] file_html = File.ReadAllLines(file,Encoding.GetEncoding(1251));
                     try
                     {
                         sw.Write(file);
                         foreach(string word_n in tab0)
                         {
-                            sw.Write(","+word_n);
+                            sw.Write(",");
                             //string file_body = "";
                             
                             //
                        
                                 foreach (string file_body in file_html)
                                 {
-                            // sw.Write(","+file_body);
-                                // string res = textfromtag(file_body, "<a", ">");
+                                // sw.Write(","+file_body);
+                                //string res = textfromtag(file_body, word_n, Environment.NewLine);
                                 //  textBox1.Text+= res;
-                                string res = Regex.Match(file_body.Replace(Environment.NewLine, " "),@"< a(.*?| (\s ?|\S ?))>").ToString();
-                                sw.Write("=" + res+"=");
+                                //string res = Regex.Match(file_body, word_n+@"(.*?| (\s ?|\S ?))"+Environment.NewLine).ToString();
+                               // string file_body0 = Regex.Replace(file_body, "<[^>]+>", string.Empty);
+                                int begn = file_body.IndexOf(word_n);
+                                int ends = file_body.Length;
+
+                                if (begn > 0)
+                                {
+                                    
+                                    string res = file_body.Substring(begn, ends-begn);
+                                    res = Regex.Replace(res, "<[^>]+>", string.Empty);
+                                    res = Regex.Replace(res, ",", " ");
+                                    begn = res.LastIndexOf("&nbsp;&nbsp;")+ ("&nbsp;&nbsp;").Length;
+                                    ends = res.Length;
+                                    res = res.Substring(begn, ends - begn);
+                                    //res.Replace(word_n, "_");
+                                    //sw.Write("," +res.ToString());
+                                    sw.Write(res.ToString());
+                                    break;
+                                }
                                 }
                             
                             
