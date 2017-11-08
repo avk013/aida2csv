@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,7 +21,34 @@ namespace aida2csv
         {
             InitializeComponent();
         }
+        //функция поиска в тексте
+        public string[] textfromtag(string source, string begino, string finalo)
+        {
+            string[] res = { };
+            int i = 0;
 
+            finalo.Replace("/", @"\/");
+            /////////
+            //Regex Reg = new Regex(@"""" + begino + ""(.*?)"" + finalo+"""");
+            Regex Reg = new Regex(@begino + @"(.*?|(\s?|\S?))" + @finalo);
+            //textBox28.Text = @begino + @"(.*?|(\s|\S))" + @finalo;
+            MatchCollection reHref = Reg.Matches(source);
+
+            foreach (Match match in reHref)
+            {
+                Array.Resize<string>(ref res, i + 1);
+                res[i] = match.ToString();
+                res[i] = res[i].Remove(0, begino.Length);
+                res[i] = res[i].Remove(res[i].Length - finalo.Length, finalo.Length);
+                i++;
+                //textBox7.Text += i.ToString() + "=";
+            }
+
+
+            /////////
+            return res;
+        }
+        //
         private void button1_Click(object sender, EventArgs e)
         {//получаем список полей для вібора из хтмл
 
@@ -52,9 +80,33 @@ namespace aida2csv
                foreach (String file in openFileDialog1.FileNames)
                 {
                     a += file+ Environment.NewLine;
+                    string[] file_html = File.ReadAllLines(file);
                     try
                     {
-                        sw.WriteLine(file);
+                        sw.Write(file);
+                        foreach(string word_n in tab0)
+                        {
+                            sw.Write(","+word_n);
+                            //string file_body = "";
+                            
+                            //
+                       
+                                foreach (string file_body in file_html)
+                                {
+                             // sw.Write(","+file_body);
+                              string[] res = textfromtag(file_body, word_n, "a");
+                                textBox1.Text+= res[0];
+                               //   sw.Write("=" + res[1]+"=");
+                                }
+                            
+                            
+                            //
+
+                            
+                        }
+
+
+                        sw.WriteLine();
                         //  PictureBox pb = new PictureBox();
                         //  Image loadedImage = Image.FromFile(file);
                         //  pb.Height = loadedImage.Height;
@@ -70,7 +122,7 @@ namespace aida2csv
                         //       "it may be corrupt.\n\nReported error: " + ex.Message);
                     }
                 }
-                textBox1.Text = a;
+                textBox1.Text+= a;
                 sw.Close();
             }
         }
