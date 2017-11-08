@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -21,10 +22,21 @@ namespace aida2csv
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
-            string[] in_words = { "розклад", "деканфак", "занятьфак", "______" };
-            string[] out_words = { "num", "lastname", "name", "sex", "lastnameen", "nameen" };
-            string data = @"<?xml version=""1.0"" encoding=""utf-8""?><documents>";
+        {//получаем список полей для вібора из хтмл
+
+            string path = @"c:\!\";
+            string[] tab0 = File.ReadAllLines(path+"words.txt", Encoding.UTF8);
+
+            //using (
+            FileStream fs = File.Open(path + "out.txt",FileMode.Create);
+              //  )
+                //{
+                StreamWriter sw = new StreamWriter(fs);             
+                
+            //}
+
+            //получаем список файлов и обрабатіваем их
+           
             // open file
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Multiselect = true;
@@ -32,32 +44,23 @@ namespace aida2csv
             openFileDialog1.Title = "файл для обработки";
             openFileDialog1.FileName = "*.html";
             openFileDialog1.InitialDirectory = Environment.SpecialFolder.Desktop.ToString();
-            //   string path = file_path + "Order_2.xml";
-            //file_path= file_path + "2.xml";
-          //  DialogResult dr = this.openFileDialog1.ShowDialog();
+           
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                // Create a PictureBox.
+                
                 string a = "";
                foreach (String file in openFileDialog1.FileNames)
                 {
                     a += file+ Environment.NewLine;
                     try
                     {
+                        sw.WriteLine(file);
                         //  PictureBox pb = new PictureBox();
                         //  Image loadedImage = Image.FromFile(file);
                         //  pb.Height = loadedImage.Height;
                         //   pb.Width = loadedImage.Width;
                         //    pb.Image = loadedImage;
                         //  flowLayoutPanel1.Controls.Add(pb);
-                    }
-                    catch (SecurityException ex)
-                    {
-                        // The user lacks appropriate permissions to read files, discover paths, etc.
-                        MessageBox.Show("Security error. Please contact your administrator for details.\n\n" +
-                            "Error message: " + ex.Message + "\n\n" +
-                            "Details (send to Support):\n\n" + ex.StackTrace
-                        );
                     }
                     catch (Exception ex)
                     {
@@ -68,6 +71,7 @@ namespace aida2csv
                     }
                 }
                 textBox1.Text = a;
+                sw.Close();
             }
         }
     }
