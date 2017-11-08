@@ -22,7 +22,7 @@ namespace aida2csv
             InitializeComponent();
         }
         //функция поиска в тексте
-        public string[] textfromtag(string source, string begino, string finalo)
+        public string textfromtag(string source, string begino, string finalo)
         {
             string[] res = { };
             int i = 0;
@@ -30,23 +30,24 @@ namespace aida2csv
             finalo.Replace("/", @"\/");
             /////////
             //Regex Reg = new Regex(@"""" + begino + ""(.*?)"" + finalo+"""");
-            Regex Reg = new Regex(@begino + @"(.*?|(\s?|\S?))" + @finalo);
-            //textBox28.Text = @begino + @"(.*?|(\s|\S))" + @finalo;
+            string quer = @begino + @"(.*?|(\s?|\S?))" + finalo;
+            Regex Reg = new Regex(quer);
+            textBox1.Text += quer;
             MatchCollection reHref = Reg.Matches(source);
-
+            textBox1.Text += source;
             foreach (Match match in reHref)
             {
                 Array.Resize<string>(ref res, i + 1);
                 res[i] = match.ToString();
+               
                 res[i] = res[i].Remove(0, begino.Length);
                 res[i] = res[i].Remove(res[i].Length - finalo.Length, finalo.Length);
-                i++;
-                //textBox7.Text += i.ToString() + "=";
+                i++; textBox1.Text += i.ToString();
+           //     textBox7.Text += i.ToString() + "=";
             }
-
-
             /////////
-            return res;
+           
+            return res[0];
         }
         //
         private void button1_Click(object sender, EventArgs e)
@@ -93,10 +94,11 @@ namespace aida2csv
                        
                                 foreach (string file_body in file_html)
                                 {
-                             // sw.Write(","+file_body);
-                              string[] res = textfromtag(file_body, word_n, "a");
-                                textBox1.Text+= res[0];
-                               //   sw.Write("=" + res[1]+"=");
+                            // sw.Write(","+file_body);
+                                // string res = textfromtag(file_body, "<a", ">");
+                                //  textBox1.Text+= res;
+                                string res = Regex.Match(file_body.Replace(Environment.NewLine, " "),@"< a(.*?| (\s ?|\S ?))>").ToString();
+                                sw.Write("=" + res+"=");
                                 }
                             
                             
