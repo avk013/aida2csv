@@ -59,13 +59,12 @@ namespace aida2csv
             //using (
             //FileStream fs = File.Open(path + "out.csv",FileMode.Create);
             FileStream fs = File.Open(path + "out.csv", FileMode.Append);
-            FileInfo filer = new FileInfo(path + "out.csv");
             //  )
             //{
             StreamWriter sw = new StreamWriter(fs,Encoding.GetEncoding("Windows-1251"));
             
-            string str = "Файл,Операционная система, Пакет обновления ОС, Имя компьютера,Имя пользователя, SMTP -адрес e - mail,Вход в домен,Тип ЦП,Системная плата,Системная память, Монитор, Дисковый накопитель,Первичный адрес IP,Первичный адрес MAC";
-            if (filer.Length==0) sw.WriteLine(str);
+            string str = "Файл,Операционная система, Пакет обновления ОС, Имя компьютера,Имя пользователя, SMTP -адрес e - mail,Вход в домен,Тип ЦП, Системная плата,Системная память, Монитор, Дисковый накопитель,Первичный адрес IP,Первичный адрес MAC";
+            sw.WriteLine(str);
             //}
 
             //получаем список файлов и обрабатіваем их
@@ -115,7 +114,7 @@ namespace aida2csv
                                     begn = res.LastIndexOf("&nbsp;&nbsp;")+ ("&nbsp;&nbsp;").Length;
                                     ends = res.Length;
                                     res = res.Substring(begn, ends - begn);
-                                    res.Replace(word_n, "_");
+                                    //res.Replace(word_n, "_");
                                     //sw.Write("," +res.ToString());
                                     sw.Write(res.ToString());
                                     break;
@@ -148,12 +147,6 @@ namespace aida2csv
                 textBox1.Text+= a;
                 sw.Close();
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            textBox1.SelectionStart = textBox1.Text.Length;
-            textBox1.ScrollToCaret();
         }
     }
 }
